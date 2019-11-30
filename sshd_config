@@ -1,0 +1,170 @@
+# Package generated configuration file
+# See the sshd_config(5) manpage for details
+# https://www.freebsd.org/cgi/man.cgi?query=sshd_config&sektion=5
+
+# Specify which version of the IP Protocol (options inet (IPv4 only), 
+# inet6 (IPv6 only), default any (IPv4 and IPv6)) 
+AddressFamily inet
+
+# Specify the port number that sshd listens on (default 22)
+Port 22
+
+# Specifies the supported version of the protocol (default 2)
+Protocol 2
+
+# Look up remote host name and check that the resolved host name for the
+# remote IP address maps back back to the very same IP (default yes)
+UseDNS yes
+
+# HostKeys for protocol version 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO
+
+# Server disconnects after this time if the user has not logged in succesfully (default 120)
+LoginGraceTime 30
+
+# Allow login with user-name root (default no)
+PermitRootLogin no
+
+# Check file modes and ownership of user's files and home directory (default yes)
+StrictModes yes
+
+# Sets timeout interval after which if no data has been received from
+# the client a message will be send through the encrypted tunnel (default 0)
+ClientAliveInterval 300
+
+# Number of client alive messages before automatically disconnecting (default 3)
+ClientAliveCountMax 2
+
+# Allowed authentication methods
+AuthenticationMethods publickey
+
+# Public key authentication (default yes)
+PubkeyAuthentication yes
+
+# Specifies the location of the file that contain the public key(s)
+# %h for the users home directory
+# %u for the users name
+AuthorizedKeysFile /etc/ssh/public_keys/%u/authorized_keys
+
+# Deactivate for security (default no)
+HostbasedAuthentication no
+
+# To enable empty passwords, change to yes (NOT RECOMMENDED, default no)
+PermitEmptyPasswords no
+
+# Change to yes to enable challenge-response passwords (default yes)
+ChallengeResponseAuthentication no
+
+# Change to no to disable tunnelled clear text passwords (default no)
+PasswordAuthentication no
+
+# Display configuration (default no)
+X11Forwarding no
+X11DisplayOffset 10
+X11UseLocalhost no
+
+# Print messages (default yes (both))
+PrintMotd yes
+PrintLastLog yes
+
+# Sent keepalive messages to the client (default yes).
+TCPKeepAlive yes
+
+# Limit the number of concurrent unauthenticated connections (default 10:30:60)
+MaxStartups 2:50:5
+
+# Limit the number of open sessions per network conecction (default 10)
+MaxSessions 3
+
+# Limit the number of authentication attempts per connection (default 6)
+MaxAuthTries 5
+
+# Location of banner file
+# Banner /etc/ssh/ssh-banner
+Banner none
+DebianBanner no
+
+# Allow client to pass locale environment variables
+AcceptEnv LANG LC_*
+
+# Allow an sftp server for file exchange
+#Subsystem sftp /usr/lib/openssh/sftp-server
+Subsystem sftp internal-sftp
+
+# Deactivate PAM (Pluggable Authentication Module)
+UsePAM no
+
+# Allow and deny access. The processed order is:
+# DenyUsers, AllowUsers, DenyGroups, AllowGroups
+#
+# multiple users can be listed seperated by spaces
+#
+# limit access to a user and specify the ip address
+# by using USER@192.168.2.0 or allow the subnet by 
+# USER@192.168.2.0/25 (using CIDR notation in this
+# case for IP's in the range from .0 to .127 
+
+# Allow server access to certain users and groups only
+# You must assign every user to group ssh
+AllowUsers christian alex
+AllowGroups ssh
+
+# Deny access to certain users and groups
+DenyUsers root
+DenyGroups root
+
+# Specify acceptable key exchange algorithms, ciphers and message ciphers, and message authentication codes
+PubkeyAcceptedKeyTypes ssh-rsa,ssh-ed25519
+KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr,aes256-cbc
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
+
+# Set data and time limit before renegotiation for new session key
+RekeyLimit 20M 600
+
+# Use compression after successful authentication (default delayed)
+Compression no
+
+# Deactivate TCP forwarding (default yes)
+AllowTcpForwarding no
+
+# Deactivate AgentForwarding (default yes)
+AllowAgentForwarding no
+
+# Restrict port forwarding (the -L option when using ssh in the terminal)
+# seperate multiple forwardings with with space (default any, or none)
+PermitOpen none
+
+# Specifies whether tunnel device forwarding is allowed (default no)
+PermitTunnel no
+
+# Key Revocation List
+# use ssh-keygen -ukf /etc/ssh/revoked_keys /etc/ssh/public_keys/USER/authorized_keys to block all public keys from a single user
+# -u for update
+# -k for KRL mode
+# -f to specify the KRL file
+RevokedKeys /etc/ssh/revoked_keys
+
+# =====================================================================
+# Match rules can be used to allow or restrict options to certain users
+# =====================================================================
+
+# Allow a user with name alex access to the server from a specific ip address
+# for file transfer to rootjail directory only
+
+Match User alex, Address 123.456.789.123
+ChrootDirectory /media/filetransfer/alex
+AllowTCPForwarding no
+PermitOpen none
+X11Forwarding no
+RekeyLimit 500M 600
+ForceCommand internal-sftp
+
+Match User alex, Address *,!123.456.789.123
+DenyUsers alex
+
