@@ -3,6 +3,9 @@
 AddressFamily inet
 
 # Specify the port number that sshd listens on (default 22)
+# Dont use a default port, it will only fill up your log file.
+# Choose a port not taken (see: https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers). 
+# Be aware that this will only help to reduce the size of your log and adds nothing(!) to security
 Port 22
 
 # Specifies the supported version of the protocol (default 2)
